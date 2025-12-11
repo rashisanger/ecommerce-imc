@@ -2,6 +2,7 @@ const express=require("express");
 const cors=require("cors")
 const dotenv=require("dotenv");
 const connectDB=require('./config/db');
+const userRoutes=require("./routes/userRouts");
 
 dotenv.config();
 const app=express();
@@ -16,6 +17,8 @@ connectDB();
 app.get("/",(req,res)=>{
     res.send("welcome");
 })
+//API routes
+app.use("/api/users",userRoutes);
 app.listen(PORT,()=>{
     console.log(`server is running on http://localhost:${PORT}`)
 });
