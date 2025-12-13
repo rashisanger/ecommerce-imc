@@ -42,6 +42,7 @@ const Navbar = () => {
             </div>
             {/*Right - icons*/}
             <div className='flex items-center space-x-4'>
+                <Link to='/admin' className='block bg-black px-2 rounded text-sm text-white'>Admin</Link>
 
                 {/*Right -Serach icon*/}
                 <SeachBar/>
