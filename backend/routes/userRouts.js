@@ -67,11 +67,52 @@ router.post('/login',async (req,res)=>{
     }
 })
 
-//@route GET /api/users/profile
-//@desc get looged in user profile {protected route}
-//@access private
-router.get("/profile",protect,async (req,res)=>{
-    res.json(req.user);
+//@route GET /api/products
+//@desc Get all products with filters
+//@access Public
+router.get("/", async (req, res) => {
+  try {
+    const {
+      category,
+      minPrice,
+      maxPrice,
+      sortBy,
+      search,
+    } = req.query;
 
-})
+    let query = {};
+
+    // 🔹 Category filter
+    if (category) {
+      query.category = category;
+    }
+
+    // 🔹 Price filter
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+
+    // 🔹 Search by name
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
+
+    // 🔹 Sorting
+    let sortOption = {};
+    if (sortBy === "priceLow") sortOption.price = 1;
+    if (sortBy === "priceHigh") sortOption.price = -1;
+    if (sortBy === "nameAZ") sortOption.name = 1;
+    if (sortBy === "nameZA") sortOption.name = -1;
+
+    const products = await Product.find(query).sort(sortOption);
+
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
 module.exports=router;

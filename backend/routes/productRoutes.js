@@ -131,6 +131,18 @@ router.delete("/:id", protect, admin, async (req, res) => {
         console.error(error);
         res.status(500).send("Server Error"); 
     }
+});
+//@route get /api/products
+//@desc get all products with optional query filters
+//@acess public
+router.get("/",async(req,res)=>{
+  try{
+      const {collection,ingredient,category,minPrice,maxPrice,sortBy,search,category}=req.query;
+      let query={};
+      
+  }catch (error){
+
+  }
 })
 
 module.exports = router;
