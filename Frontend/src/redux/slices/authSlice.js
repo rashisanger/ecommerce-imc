@@ -40,3 +40,15 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+
+//async thuk for user registration
+export const regsterUser=createAsyncThunk(
+  "auth/loginUser",
+  async(userData,{rejectWithValue})=>{
+    try{
+        const response=await axios.post({})
+    }catch(error){
+
+    }
+  }
+);
