@@ -45,7 +45,7 @@ router.put("/:id/pay",protect,async(req,res)=>{
         if(!checkout){
             return res.status(404).json({message:"Checkout not founnd"});
         }
-        if(paymentStatus==="paid"){
+        if(paymentStatus==="Paid"){
             checkout.isPaid=true;
             checkout.paymentStatus=paymentStatus;
             checkout.paymentDetails=paymentDetails;
@@ -101,4 +101,4 @@ router.post("/:id/finalize",protect,async (req,res)=>{
         res.status(500).json({message:"server error"});
     }
 });
-module.exports=router;
+module.exports = router;
