@@ -16,8 +16,11 @@ import ProductManagement from './components/Admin/ProductManagement'
 import EditProductPage from './components/Admin/EditProductPage'
 import OrderManagement from './components/Admin/OrderManagement'
 
+import {Provider} from "react-redux";
+import store from "./redux/store";
 const App = () => {
   return (
+    <Provider store={store}>
     <BrowserRouter>
     <Toaster position="top-right" />
      <Routes>
@@ -26,7 +29,7 @@ const App = () => {
        <Route path='login' element={<Login/>}></Route>
        <Route path='register' element={<Register/>}></Route>
        <Route path='profile' element={<Profile/>}></Route>
-       <Route path='collections/:collection' element={<Collectionpage/>}></Route>
+       <Route path='collections/all' element={<Collectionpage/>}></Route>
        <Route path='product/:id' element={<ProductDetails/>}></Route>
        <Route path="checkout" element={<Checkout/>}></Route>
       </Route>
@@ -40,6 +43,7 @@ const App = () => {
       </Route>
      </Routes>
     </BrowserRouter>
+    </Provider>
   )
 }
 

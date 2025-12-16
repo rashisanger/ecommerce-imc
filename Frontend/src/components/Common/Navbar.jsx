@@ -23,20 +23,20 @@ const Navbar = () => {
 
   return (
     <>
-        <nav className='container mx-auto flex items-center justify-between py-4 px-6'>
+        <nav className='container mx-auto flex items-center justify-between py-2 px-6'>
             {/*left logo*/}
             <Link to="/" className="text-2xl font-medium">
-                <img src={logo} alt="logo" className='h-10 w-auto'/>
+                <img src={logo} alt="logo" className='h-12 w-auto'/>
             </Link>
             {/*Center - navigation Links*/}
             <div className='hidden md:flex space-x-6'>
-                <Link to="/" className='text-gray-700 hover:text-black text-sm font-medium uppercase'>
+                <Link to="/" className='text-gray-700 hover:text-black text-m font-medium uppercase'>
                     Home
                 </Link>
-                <Link to="/collections/all" className='text-gray-700 hover:text-black text-sm font-medium uppercase'>
+                <Link to="/collections/all" className='text-gray-700 hover:text-black text-m font-medium uppercase'>
                     Products
                 </Link>
-                <Link to="#" className='text-gray-700 hover:text-black text-sm font-medium uppercase'>
+                <Link to="#" className='text-gray-700 hover:text-black text-m font-medium uppercase'>
                     Category
                 </Link>
             </div>

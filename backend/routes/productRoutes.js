@@ -1,7 +1,6 @@
 const express = require("express")
 const Product = require("../models/Product")
 const {protect, admin} = require("../middleware/authMiddleware")
-
 const router = express.Router();
 //  @route POST /api/products
 //  @desc Create a new Product
@@ -141,17 +140,19 @@ router.get("/",async(req,res)=>{
       let query={};
 
       // Filter logic
-      if(collection && collection.toLowerCase() !== "all") {
-        query.collections = collection;
+      if (collection && collection.toLowerCase() !== "all") {
+        query.collections = { $regex: new RegExp(`^${collection}$`, "i") };
       }
 
-      if(category && category.toLowerCase() !== "all") {
-        query.category = category;
+      if (category && category.toLowerCase() !== "all") {
+        query.category = { $regex: new RegExp(`^${category}$`, "i") };
       }
 
-      if(brand) {
-        query.brand = {$in : brand.split(",")};
+
+      if (brand) {
+        query.brand = { $in: brand.split(",").map(b => new RegExp(`^${b}$`, "i")) };
       }
+
       if(minPrice ||maxPrice) {
         query.price = {};
         if(minPrice) query.price.$gte = Number(minPrice);

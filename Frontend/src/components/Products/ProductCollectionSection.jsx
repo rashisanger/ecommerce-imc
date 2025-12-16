@@ -10,33 +10,34 @@ const categories = [
   {
     title: "Health & Nutrition",
     image: healthcare,
-    bg: "group-hover:bg-red-300",
-    link: "/collections/all?category=health"
+    bg: "group-hover:bg-yellow-300",
+    link: `/collections/all?category=${encodeURIComponent("Health & Nutrition")}`,
   },
   {
     title: "Skin Care",
     image: skincare,
-    bg: "group-hover:bg-orange-300",
-    link: "/collections/all?category=skincare"
+    bg: "group-hover:bg-green-400",
+    link: `/collections/all?category=${encodeURIComponent("Skin Care")}`,
   },
   {
     title: "Personal Care",
     image: personalcare,
-    bg: "group-hover:bg-blue-300",
-    link: "/collections/all?category=personalcare"
+    bg: "group-hover:bg-violet-400",
+    link: `/collections/all?category=${encodeURIComponent("Personal Care")}`,
   },
   {
     title: "Baby Care",
     image: babycare,
-    bg: "group-hover:bg-green-300",
-    link: "/collections/all?category=babycare"
-  }
+    bg: "group-hover:bg-red-400",
+    link: `/collections/all?category=${encodeURIComponent("Baby Care")}`,
+  },
 ];
+
 
 const ProductCollectionSection = () => {
   return (
     <section className="py-4 px-0 lg:px-0">
-      <h1 className="text-3xl text-center font-bold pb-4 text-gray-800">
+      <h1 className="text-4xl text-center font-semibold pb-4 text-green-900 mt-4 mb-4">
         Shop by Category
       </h1>
 

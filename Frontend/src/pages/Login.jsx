@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { loginUser } from "../redux/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const dispatch=useDispatch();
   const handelSubmit=(e)=>{
     e.preventDefault();
-    console.log("User registered:",{email,password});
+    dispatch(loginUser({email,password}));
   }
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/60 px-4 z-50">

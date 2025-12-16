@@ -2,39 +2,44 @@ import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 const FilterSidebar = () => {
-    const [searchParams,setSearchParams]=useSearchParams();
-    const [priceRange, setPriceRange] = useState(500);
-    const [filters,setFilters]=useState({
-        category:"",
-        herbal_ingredients:"",
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [priceRange, setPriceRange] = useState(1500);
+  const [category, setCategory] = useState("");
+  const [sortBy, setSortBy] = useState("");
 
-    })
-    const categories=["health&nut"]
+  const applyFilters = () => {
+    const params = {};
+
+    if (category) params.category = category;
+    if (priceRange) params.maxPrice = priceRange;
+    if (sortBy) params.sortBy = sortBy;
+
+    setSearchParams(params);
+  };
+
   return (
     <div className="p-4 space-y-6">
-      {/* Heading */}
       <h2 className="text-xl font-semibold">Filters</h2>
 
-      {/* Category Filter */}
+      {/* Category */}
       <div>
         <h3 className="font-medium mb-2">Categories</h3>
-        <div className="space-y-1 text-gray-700">
-          <label className="flex items-center gap-2">
-            <input type="checkbox" /> Health & Nutrition
-          </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" /> Skincare
-          </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" /> Personal Care
-          </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" /> Baby Care
-          </label>
+        <div className="space-y-1">
+          {["health", "skincare", "personalcare", "babycare"].map((cat) => (
+            <label key={cat} className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="category"
+                value={cat}
+                onChange={(e) => setCategory(e.target.value)}
+              />
+              {cat}
+            </label>
+          ))}
         </div>
       </div>
 
-      {/* Price Range */}
+      {/* Price */}
       <div>
         <h3 className="font-medium mb-2">Price</h3>
         <input
@@ -45,23 +50,28 @@ const FilterSidebar = () => {
           onChange={(e) => setPriceRange(e.target.value)}
           className="w-full"
         />
-        <p className="text-sm text-gray-600">Up to ₹{priceRange}</p>
+        <p>Up to ₹{priceRange}</p>
       </div>
 
-      {/* Sorting */}
+      {/* Sort */}
       <div>
         <h3 className="font-medium mb-2">Sort By</h3>
-        <select className="w-full border p-2 rounded">
-          <option>Relevance</option>
-          <option>Price: Low to High</option>
-          <option>Price: High to Low</option>
-          <option>Name: A to Z</option>
-          <option>Name: Z to A</option>
+        <select
+          onChange={(e) => setSortBy(e.target.value)}
+          className="w-full border p-2 rounded"
+        >
+          <option value="">Relevance</option>
+          <option value="priceLow">Price: Low to High</option>
+          <option value="priceHigh">Price: High to Low</option>
+          <option value="nameAZ">Name: A to Z</option>
+          <option value="nameZA">Name: Z to A</option>
         </select>
       </div>
 
-      {/* Apply Filters Button */}
-      <button className="w-full bg-black text-white py-2 rounded mt-4">
+      <button
+        onClick={applyFilters}
+        className="w-full bg-black text-white py-2 rounded"
+      >
         Apply Filters
       </button>
     </div>

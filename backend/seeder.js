@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const Product = require("./models/Product");
 const User = require("./models/user");
 const Cart = require("./models/cart");
-const products = require("./data/products");
+const products = require("./data/products-updated");
 
 dotenv.config();
 
