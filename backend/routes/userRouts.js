@@ -4,7 +4,7 @@ const jwt=require("jsonwebtoken");
 const {protect}=require("../middleware/authMiddleware")
 
 const router=express.Router();
-//@route POST /api/user/register
+//@route POST /api/users/register
 //@desc register a new user
 //@access Public
 router.post("/register",async (req,res)=>{

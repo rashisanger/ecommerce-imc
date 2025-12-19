@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { fetchProductsByFilters } from "../redux/slices/productSlice";
+import { fetchProducts } from "../redux/slices/productSlice"; 
 import { FaFilter } from "react-icons/fa";
 import FilterSidebar from "../components/Products/FilterSidebar";
 import ProductGrid from "../components/Products/ProductGrid";
@@ -10,7 +10,9 @@ const Collectionpage = () => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const sidebarRef = useRef(null);
-  const { items: products, loading, error } = useSelector(
+
+  // ✅ productSlice state structure changed (items → products)
+  const { products, loading, error } = useSelector(
     (state) => state.products
   );
 
@@ -28,13 +30,27 @@ const Collectionpage = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  //  Added missing filters supported by backend + productSlice
   const category = searchParams.get("category") || "";
+  const minPrice = searchParams.get("minPrice") || ""; // NEW
   const maxPrice = searchParams.get("maxPrice") || "";
   const sortBy = searchParams.get("sortBy") || "";
+  const search = searchParams.get("search") || ""; // NEW
+  const limit = searchParams.get("limit") || ""; // NEW
 
   useEffect(() => {
-    dispatch(fetchProductsByFilters({ category, maxPrice, sortBy }));
-  }, [category, maxPrice, sortBy]);
+    //  Updated thunk name + extended filters
+    dispatch(
+      fetchProducts({
+        category,
+        minPrice,
+        maxPrice,
+        sortBy,
+        search,
+        limit,
+      })
+    );
+  }, [dispatch, category, minPrice, maxPrice, sortBy, search, limit]);
 
   return (
     <div className="flex flex-col lg:flex-row">

@@ -25,7 +25,7 @@ const FilterSidebar = () => {
       <div>
         <h3 className="font-medium mb-2">Categories</h3>
         <div className="space-y-1">
-          {["health", "skincare", "personalcare", "babycare"].map((cat) => (
+          {["Health & Nutrition", "Skin Care", "Personal Care", "Baby Care"].map((cat) => (
             <label key={cat} className="flex items-center gap-2">
               <input
                 type="radio"
@@ -61,10 +61,10 @@ const FilterSidebar = () => {
           className="w-full border p-2 rounded"
         >
           <option value="">Relevance</option>
-          <option value="priceLow">Price: Low to High</option>
-          <option value="priceHigh">Price: High to Low</option>
-          <option value="nameAZ">Name: A to Z</option>
-          <option value="nameZA">Name: Z to A</option>
+          <option value="priceAsc">Price: Low to High</option>
+          <option value="priceDesc">Price: High to Low</option>
+          <option value="nameAsc">Name: A to Z</option>
+          <option value="nameDesc">Name: Z to A</option>
         </select>
       </div>
 

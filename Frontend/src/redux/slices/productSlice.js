@@ -1,51 +1,127 @@
-// redux/slices/productSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Fetch products with filters
-export const fetchProductsByFilters = createAsyncThunk(
-  "products/fetchByFilters",
-  async ({ category, maxPrice, sortBy }, { rejectWithValue }) => {
-    try {
-      const params = {};
-      if (category) params.category = category;
-      if (maxPrice) params.maxPrice = maxPrice;
-      if (sortBy) params.sortBy = sortBy;
+const API = `${import.meta.env.VITE_BACKEND_URL}/api/products`;
 
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/products`,
-        { params }
-      );
+/* ============================
+   FEATURED PRODUCTS (HOME)
+============================ */
+export const fetchFeaturedProducts = createAsyncThunk(
+  "products/fetchFeaturedProducts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`${API}?bestSeller=true&limit=8`);
       return data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch products");
+      return rejectWithValue("Failed to fetch featured products");
     }
   }
 );
 
+/* ============================
+   BEST SELLER (HOME)
+============================ */
+export const fetchBestSellerProduct = createAsyncThunk(
+  "products/fetchBestSellerProduct",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`${API}?bestSeller=true&limit=1`);
+      return data[0] || null;
+    } catch (error) {
+      return rejectWithValue("Failed to fetch best seller");
+    }
+  }
+);
+
+/* ============================
+   EXISTING THUNKS (UNCHANGED)
+============================ */
+export const fetchProducts = createAsyncThunk(
+  "products/fetchProducts",
+  async (filters = {}, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(API, { params: filters });
+      return data;
+    } catch (error) {
+      return rejectWithValue("Failed to fetch products");
+    }
+  }
+);
+
+export const fetchProductById = createAsyncThunk(
+  "products/fetchProductById",
+  async (id) => {
+    const { data } = await axios.get(`${API}/${id}`);
+    return data;
+  }
+);
+
+export const fetchSimilarProducts = createAsyncThunk(
+  "products/fetchSimilarProducts",
+  async (id) => {
+    const { data } = await axios.get(`${API}/similar/${id}`);
+    return data;
+  }
+);
+
+/* ============================
+   SLICE
+============================ */
 const productSlice = createSlice({
   name: "products",
   initialState: {
-    items: [],
+    products: [],              // collection page
+    featuredProducts: [],      // home slider
+    bestSellerProduct: null,   // home best seller
+    selectedProduct: null,
+    similarProducts: [],
     loading: false,
     error: null,
   },
-  reducers: {},
+
+  reducers: {
+    clearSelectedProduct: (state) => {
+      state.selectedProduct = null;
+      state.similarProducts = [];
+    },
+  },
+
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProductsByFilters.pending, (state) => {
+
+      /* FEATURED */
+      .addCase(fetchFeaturedProducts.fulfilled, (state, action) => {
+        state.featuredProducts = action.payload;
+      })
+
+      /* BEST SELLER */
+      .addCase(fetchBestSellerProduct.fulfilled, (state, action) => {
+        state.bestSellerProduct = action.payload;
+      })
+
+      /* COLLECTION */
+      .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
-      .addCase(fetchProductsByFilters.fulfilled, (state, action) => {
+      .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload;
+        state.products = action.payload;
       })
-      .addCase(fetchProductsByFilters.rejected, (state, action) => {
+      .addCase(fetchProducts.rejected, (state) => {
         state.loading = false;
-        state.error = action.payload;
+      })
+
+      /* PRODUCT DETAILS */
+      .addCase(fetchProductById.fulfilled, (state, action) => {
+        state.selectedProduct = action.payload;
+      })
+
+      /* SIMILAR */
+      .addCase(fetchSimilarProducts.fulfilled, (state, action) => {
+        state.similarProducts = action.payload;
       });
   },
 });
 
+export const { clearSelectedProduct } = productSlice.actions;
 export default productSlice.reducer;

@@ -6,10 +6,13 @@ import logo from '../../assets/logo.png'
 import { Link } from 'react-router-dom'
 import SeachBar from './SeachBar'
 import CartDrawer from '../Layout/CartDrawer'
+import { useSelector } from 'react-redux'
 
 const Navbar = () => {
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [navDrawerOpen, setNavDrawerOpen] = useState(false)
+    const cart = useSelector((state) => state.cart)
+    const cartItemCount = cart.products?.reduce((total, product) => total+product.quantity, 0) || 0;
 
     {/*Hamburger */}
     const toggleNavDrawer = () => {   
@@ -29,22 +32,31 @@ const Navbar = () => {
                 <img src={logo} alt="logo" className='h-12 w-auto'/>
             </Link>
             {/*Center - navigation Links*/}
-            <div className='hidden md:flex space-x-6'>
+            <div className='hidden md:flex space-x-10'>
                 <Link to="/" className='text-gray-700 hover:text-black text-m font-medium uppercase'>
                     Home
                 </Link>
                 <Link to="/collections/all" className='text-gray-700 hover:text-black text-m font-medium uppercase'>
                     Products
                 </Link>
-                <Link to="#" className='text-gray-700 hover:text-black text-m font-medium uppercase'>
-                    Category
+                <Link to="/collections/all?category=Baby Care" className='text-gray-700 hover:text-black text-m font-medium uppercase'>
+                    Baby
+                </Link>
+                <Link to={`/collections/all?category=${encodeURIComponent("Health & Nutrition")}`} className='text-gray-700 hover:text-black text-m font-medium uppercase'>
+                    Health
+                </Link>
+                <Link to="/collections/all?category=Personal Care" className='text-gray-700 hover:text-black text-m font-medium uppercase'>
+                    Personal
+                </Link>
+                <Link to="/collections/all?category=Skin Care" className='text-gray-700 hover:text-black text-m font-medium uppercase'>
+                    Skin
                 </Link>
             </div>
             {/*Right - icons*/}
             <div className='flex items-center space-x-4'>
                 <Link to='/admin' className='block bg-black px-2 rounded text-sm text-white'>Admin</Link>
 
-                {/*Right -Serach icon*/}
+                {/* Right -Serach icon */}
                 <SeachBar/>
 
                 <Link to="profile" className='hover:text-black'> 
@@ -53,7 +65,11 @@ const Navbar = () => {
                 
                 <button onClick={toggleCartDrawer} className='relative hover:text-black'>
                     <HiOutlineShoppingBag className='h-6 w-6 text-gray-700'/>
-                    <span className='absolute -top-1 bg-[#46a939] text-white text-sm rounded-full px-2 py-0.5'>2</span>
+                    {cartItemCount > 0 && (
+                        <span className='absolute -top-1 bg-[#46a939] text-white text-sm rounded-full px-2 py-0.5'>
+                            {cartItemCount}
+                        </span>
+                    )}
                 </button>
                 
 
@@ -75,20 +91,30 @@ const Navbar = () => {
             <div className='p-4'>
                 <h2 className='text-xl font-semibold mb-4'>Menu</h2>
                 <nav className='space-y-4'>
-                    <Link to="#"
+                    <Link to="/"
                     onClick={toggleNavDrawer}
                     className='block text-gray-600 hover:text-black'>
                         Home
                     </Link>
-                    <Link to="#"
+                    <Link to="/collections/all?category=Personal Care"
                     onClick={toggleNavDrawer}
                     className='block text-gray-600 hover:text-black'>
-                        Products
+                        Personal Care
                     </Link>
-                    <Link to="#"
+                    <Link to="/collections/all?category=Baby Care"
                     onClick={toggleNavDrawer}
                     className='block text-gray-600 hover:text-black'>
-                        Category
+                        Baby Care
+                    </Link>
+                    <Link to={`/collections/all?category=${encodeURIComponent("Health & Nutrition")}`}
+                    onClick={toggleNavDrawer}
+                    className='block text-gray-600 hover:text-black'>
+                        Health Care
+                    </Link>
+                    <Link to="/collections/all?category=Skin Care"
+                    onClick={toggleNavDrawer}
+                    className='block text-gray-600 hover:text-black'>
+                        Skin Care
                     </Link>
                 </nav>
             </div>

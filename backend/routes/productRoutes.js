@@ -1,62 +1,16 @@
-const express = require("express")
-const Product = require("../models/Product")
-const {protect, admin} = require("../middleware/authMiddleware")
+const express = require("express");
+const Product = require("../models/Product");
+const { protect, admin } = require("../middleware/authMiddleware");
+
 const router = express.Router();
-//  @route POST /api/products
-//  @desc Create a new Product
-//  @access Private/Admin
-router.post("/", protect, admin, async (req, res)=> {
-    try {
-        const {name, 
-            description, 
-            price, 
-            discountPrice, 
-            countInStock, 
-            category, 
-            brand, 
-            collections, 
-            images, 
-            isFeatured, 
-            isPublished, 
-            tags, 
-            sku,
-        } = req.body;
 
-        // basic validation
-        if (!name || !description || !price || !category || !sku) {
-        return res.status(400).json({ message: "Missing required fields" });
-        }
-
-        const product = new Product({
-            name, 
-            description, 
-            price, 
-            discountPrice, 
-            countInStock, 
-            category, 
-            brand, 
-            collections, 
-            images, 
-            isFeatured, 
-            isPublished, 
-            tags,
-            sku,
-            user: req.user._id, //reference to the admin user who created it
-        });
-
-        const createProduct = await product.save();
-        res.status(201).json(createProduct)
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Server Error")
-    }
-});
-
-// @route PUT /api/products/:id
-// @desc Update an existing product ID
+/* ======================================================
+   CREATE PRODUCT (ADMIN)
+====================================================== */
+// @route POST /api/products
+// @desc Create a new product
 // @access Private/Admin
-router.put("/:id", protect, admin, async (req, res) => {
+router.post("/", protect, admin, async (req, res) => {
   try {
     const {
       name,
@@ -74,34 +28,61 @@ router.put("/:id", protect, admin, async (req, res) => {
       sku,
     } = req.body;
 
+    // Basic validation
+    if (!name || !description || !price || !category || !sku) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const product = new Product({
+      name,
+      description,
+      price,
+      discountPrice,
+      countInStock,
+      category,
+      brand,
+      collections,
+      images,
+      isFeatured,
+      isPublished,
+      tags,
+      sku,
+      user: req.user._id,
+    });
+
+    const createdProduct = await product.save();
+    res.status(201).json(createdProduct);
+  } catch (error) {
+    console.error("Create product error:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+/* ======================================================
+   UPDATE PRODUCT (ADMIN)
+====================================================== */
+// @route PUT /api/products/:id
+// @desc Update product
+// @access Private/Admin
+router.put("/:id", protect, admin, async (req, res) => {
+  try {
     const product = await Product.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // Update fields safely
-    if (name !== undefined) product.name = name;
-    if (description !== undefined) product.description = description;
-    if (price !== undefined) product.price = price;
-    if (discountPrice !== undefined) product.discountPrice = discountPrice;
-    if (countInStock !== undefined) product.countInStock = countInStock;
-    if (category !== undefined) product.category = category;
-    if (brand !== undefined) product.brand = brand;
-    if (collections !== undefined) product.collections = collections;
-    if (images !== undefined) product.images = images;
-    if (tags !== undefined) product.tags = tags;
-    if (sku !== undefined) product.sku = sku;
-
-    if (isFeatured !== undefined) product.isFeatured = isFeatured;
-    if (isPublished !== undefined) product.isPublished = isPublished;
+    Object.keys(req.body).forEach((key) => {
+      if (req.body[key] !== undefined) {
+        product[key] = req.body[key];
+      }
+    });
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);
   } catch (error) {
-    console.error(error);
+    console.error("Update product error:", error);
 
-    // Handle duplicate SKU
     if (error.code === 11000) {
       return res.status(400).json({ message: "SKU already exists" });
     }
@@ -110,94 +91,127 @@ router.put("/:id", protect, admin, async (req, res) => {
   }
 });
 
+/* ======================================================
+   DELETE PRODUCT (ADMIN)
+====================================================== */
 // @route DELETE /api/products/:id
-// @desc Delete a product by ID
-// @access Private/admin
-
+// @desc Delete product
+// @access Private/Admin
 router.delete("/:id", protect, admin, async (req, res) => {
-    try {
-        // Find the product by ID
-        const product = await Product.findById(req.params.id);
+  try {
+    const product = await Product.findById(req.params.id);
 
-        if(product) {
-            // remove the product from DB
-            await product.deleteOne();
-            res.json({message: "Product removed"});
-        }else{
-            res.status(404).json({message: "Product not found"});
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Server Error"); 
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
     }
-});
-//@route get /api/products
-//@desc get all products with optional query filters
-//@acess public
-router.get("/",async(req,res)=>{
-  try{
-      const {collection,brand,minPrice,maxPrice,sortBy,search,category, limit}=req.query;
-      let query={};
 
-      // Filter logic
-      if (collection && collection.toLowerCase() !== "all") {
-        query.collections = { $regex: new RegExp(`^${collection}$`, "i") };
-      }
-
-      if (category && category.toLowerCase() !== "all") {
-        query.category = { $regex: new RegExp(`^${category}$`, "i") };
-      }
-
-
-      if (brand) {
-        query.brand = { $in: brand.split(",").map(b => new RegExp(`^${b}$`, "i")) };
-      }
-
-      if(minPrice ||maxPrice) {
-        query.price = {};
-        if(minPrice) query.price.$gte = Number(minPrice);
-        if(maxPrice) query.price.$lte = Number(maxPrice);
-      }
-      if(search) {
-        query.$or = [
-          {name: {$regex: search, $options: "i"}},
-          {description: {$regex: search, $options: "i"}},
-        ]
-      }
-
-      // Sort Logic
-      let sort = {};
-      if(sortBy){
-        switch (sortBy) {
-          case "priceAsc":
-            sort = {price: 1};
-            break;
-          case "priceDesc":
-            sort = {price: -1};
-            break;
-          case "popularity":
-            sort = {rating: -1};
-            break;
-          default:
-            break;
-        }
-      }
-      
-
-      // Fetch products and apply sorting and limit
-      let products = await Product.find(query)
-        .sort(sort)
-        .limit(Number(limit) || 0);
-      res.json(products);
-
-  }catch (error){
-    console.error(error);
-    res.status(500).send("Server Error");
+    await product.deleteOne();
+    res.json({ message: "Product removed" });
+  } catch (error) {
+    console.error("Delete product error:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
+/* ======================================================
+   GET ALL PRODUCTS WITH FILTERS
+====================================================== */
+// @route GET /api/products
+// @desc Get products with filters
+// @access Public
+router.get("/", async (req, res) => {
+  try {
+    const {
+      collection,
+      brand,
+      minPrice,
+      maxPrice,
+      sortBy,
+      search,
+      category,
+      limit,
+      bestSeller,
+    } = req.query;
+
+    let query = {};
+
+    // Collection filter
+    if (collection && collection.toLowerCase() !== "all") {
+      query.collections = new RegExp(`^${collection}$`, "i");
+    }
+
+    // Category filter
+    if (category && category.toLowerCase() !== "all") {
+      query.category = new RegExp(`^${category}$`, "i");
+    }
+
+    // Brand filter
+    if (brand) {
+      query.brand = {
+        $in: brand.split(",").map((b) => new RegExp(`^${b}$`, "i")),
+      };
+    }
+
+    // Price filter
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+
+    // Search filter
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Best Seller (uses isFeatured)
+    if (bestSeller === "true") {
+      query.isFeatured = true;
+    }
+
+    // Sorting
+    let sort = {};
+    if (sortBy) {
+      switch (sortBy) {
+        case "priceAsc":
+          sort = { price: 1 };
+          break;
+        case "priceDesc":
+          sort = { price: -1 };
+          break;
+        case "nameAsc":
+          sort = { name: 1 };
+          break;
+        case "nameDesc":
+          sort = { name: -1 };
+          break;
+        case "popularity":
+          sort = { isFeatured: -1 }; // ✅ SAFE
+          break;
+        default:
+          break;
+      }
+    }
+
+    const products = await Product.find(query)
+      .sort(sort)
+      .limit(Number(limit) || 0);
+
+    res.json(products);
+  } catch (error) {
+    console.error("Fetch products error:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+/* ======================================================
+   GET SIMILAR PRODUCTS
+====================================================== */
 // @route GET /api/products/similar/:id
-// @desc Retrieve similar products
+// @desc Get similar products
 // @access Public
 router.get("/similar/:id", async (req, res) => {
   try {
@@ -208,67 +222,55 @@ router.get("/similar/:id", async (req, res) => {
     }
 
     const similarProducts = await Product.find({
-      _id: { $ne: req.params.id },
+      _id: { $ne: product._id },
       category: product.category,
     }).limit(4);
 
     res.json(similarProducts);
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    console.error("Similar products error:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
-// @route GET /api/products/best-seller
-// @desc Retrieve the product with highest rarting
+/* ======================================================
+   GET NEW ARRIVALS
+====================================================== */
+// @route GET /api/products/new-arrivals
+// @desc Get latest products
 // @access Public
-router.get("/best-seller", async (req, res) => {
-  try {
-    const bestSeller = await Product.findOne().sort({rating: -1});
-    if(bestSeller) {
-      res.json(bestSeller);
-    } else {
-      res.status(404).json({message: "No best seller found"});
-    }
-  } catch(error) {
-    console.error(error);
-    res.status(500).send("Server Error");
-  }
-});
-
-// @route GET api/products/new-arrivals
-// @desc Retrieve latest * products  - Creation data
-// @access Public
-
 router.get("/new-arrivals", async (req, res) => {
   try {
-    // Fetch latest 8 products
-    const newArrivals = await Product.find().sort({createdAt: -1}).limit(8);
-    res.json(newArrivals);
-  } catch(error) {
-    console.error(error);
-    res.status(500).send("Serve Error");
-  }
-})
+    const newArrivals = await Product.find()
+      .sort({ createdAt: -1 })
+      .limit(8);
 
+    res.json(newArrivals);
+  } catch (error) {
+    console.error("New arrivals error:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+/* ======================================================
+   GET SINGLE PRODUCT
+====================================================== */
 // @route GET /api/products/:id
-// @desc Get a single product by ID
+// @desc Get product by ID
 // @access Public
 router.get("/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 
-    if (product) {
-      res.json(product);
-    } else {
-      res.status(404).json({ message: "Product not found" });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
     }
+
+    res.json(product);
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    console.error("Single product error:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
-
-
 
 module.exports = router;
