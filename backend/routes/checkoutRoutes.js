@@ -45,7 +45,7 @@ router.put("/:id/pay",protect,async(req,res)=>{
         if(!checkout){
             return res.status(404).json({message:"Checkout not founnd"});
         }
-        if(paymentStatus==="Paid"){
+        if(paymentStatus?.toLowerCase() === "paid"){
             checkout.isPaid=true;
             checkout.paymentStatus=paymentStatus;
             checkout.paymentDetails=paymentDetails;
@@ -82,7 +82,7 @@ router.post("/:id/finalize",protect,async (req,res)=>{
                 isPaid:true,
                 paidAt:checkout.paidAt,
                 isDelivered:false,
-                paymentStatus:"paid",
+                paymentStatus:"Paid",
                 paymentDetails:checkout.paymentDetails,
             });
             checkout.isFinalized=true;
