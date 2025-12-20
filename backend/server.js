@@ -22,11 +22,11 @@ connectDB(); // Connect to MongoDB
 
 const app = express();
 
-// ✅ CORS configuration
+// ✅ CORS configuration for frontend and local dev
 app.use(cors({
   origin: [
-    "http://localhost:5173",                   // Local development
-    "https://imc-frontendd.vercel.app"        // Your deployed frontend
+    "http://localhost:5173",                   // Local dev
+    "https://imc-frontend-gamma.vercel.app"   // Your deployed frontend
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
