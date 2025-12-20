@@ -1,9 +1,11 @@
+// server.js
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const path = require("path");
 
+// Import routes
 const userRoutes = require("./routes/userRouts");
 const productRoutes = require("./routes/productRoutes");
 const cartRouts = require("./routes/cartRouts");
@@ -16,31 +18,29 @@ const productAdminRoutes = require("./routes/productAdminRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
 dotenv.config();
+connectDB(); // Connect to MongoDB
 
 const app = express();
 
-// 🔥 CORS — FIXED
+// ✅ CORS configuration
 app.use(cors({
   origin: [
-    "http://localhost:5173",
-    "https://imc-frontend-seven.vercel.app"
+    "http://localhost:5173",                   // Local development
+    "https://imc-frontendd.vercel.app"        // Your deployed frontend
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 
-// middleware
+// Middleware
 app.use(express.json());
 
-// serve images folder
+// Serve images folder
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-// DB
-connectDB();
-
-// test route
+// Test route
 app.get("/", (req, res) => {
-  res.send("welcome");
+  res.send("Backend is running!");
 });
 
 // API routes
