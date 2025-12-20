@@ -41,10 +41,10 @@ const ProductDetailsView = ({ product, similarProducts = [] }) => {
       </h2>
       <div className="max-w-6xl mx-auto bg-gray-50 p-8shadow-md">
 
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-col md:flex-row bg-white">
 
           {/* Thumbnails */}
-          <div className="hidden md:flex flex-col space-y-4 mr-6">
+          <div className="hidden md:flex flex-col space-y-4 mr-6 p-4">
             {product.images?.map((img, i) => (
               <img
                 key={i}
@@ -62,13 +62,13 @@ const ProductDetailsView = ({ product, similarProducts = [] }) => {
             <img
               src={mainImage}
               alt={product.name}
-              className="rounded-lg shadow-xl"
+              className=""
             />
           </div>
 
           {/* Right Side */}
           <div className="md:w-1/2 md:ml-10 mt-6 md:mt-0">
-            <h1 className="text-3xl font-bold mb-2 text-gray-900">
+            <h1 className="text-3xl mt-8 font-bold mb-2 text-gray-900">
               {product.name}
             </h1>
 
