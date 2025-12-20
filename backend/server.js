@@ -1,6 +1,5 @@
 // server.js
 const express = require("express");
-const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const path = require("path");
@@ -22,28 +21,47 @@ connectDB(); // Connect to MongoDB
 
 const app = express();
 
-// CORS configuration for frontend and local dev
-app.use(cors({
-  origin: [
-    "http://localhost:5173",                   // Local dev
-    "https://imc-frontend-mu.vercel.app"   // Your deployed frontend
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
-
+// --------------------
 // Middleware
+// --------------------
 app.use(express.json());
 
-// Serve images folder
+// --------------------
+// CORS Configuration
+// --------------------
+// List all allowed frontend URLs here
+const allowedOrigins = [
+  "http://localhost:5173",                  // local dev
+  "https://imc-frontend-mu.vercel.app"     // deployed frontend
+];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  if (req.method === "OPTIONS") return res.sendStatus(200);
+  next();
+});
+
+// --------------------
+// Serve Images
+// --------------------
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-// Test route
+// --------------------
+// Test Route
+// --------------------
 app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
-// API routes
+// --------------------
+// API Routes
+// --------------------
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRouts);
@@ -57,5 +75,7 @@ app.use("/api/admin/users", adminRoutes);
 app.use("/api/admin/products", productAdminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
-
+// --------------------
+// Export App for Vercel
+// --------------------
 module.exports = app;
