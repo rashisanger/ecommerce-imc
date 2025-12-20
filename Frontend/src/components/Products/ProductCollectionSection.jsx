@@ -37,7 +37,7 @@ const categories = [
 const ProductCollectionSection = () => {
   return (
     <section className="py-4 px-0 lg:px-0">
-      <h1 className="text-4xl text-center font-semibold pb-4 text-green-900 mt-4 mb-4">
+      <h1 className="text-4xl text-center font-bold pb-6 text-green-900 mt-6">
         Shop by Category
       </h1>
 
@@ -45,7 +45,7 @@ const ProductCollectionSection = () => {
         {categories.map((cat, idx) => (
           <div
             key={idx}
-            className="relative rounded-xl overflow-hidden shadow-lg group max-w-sm mx-auto"
+            className="relative rounded-xl overflow-hidden shadow-md group max-w-sm mx-auto"
           >
             <div className="h-64 w-full bg-gray-50 flex items-center justify-center overflow-hidden">
               <img
@@ -64,9 +64,9 @@ const ProductCollectionSection = () => {
 
               <Link
                 to={cat.link}
-                className="inline-block text-sm font-medium underline text-gray-900 hover:text-gray-800"
+                className="inline-block text-sm font-medium text-green-700 hover:text-green-800 transition-colors"
               >
-                Shop Now
+                Shop Now →
               </Link>
             </div>
           </div>

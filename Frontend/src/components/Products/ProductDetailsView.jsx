@@ -35,8 +35,11 @@ const ProductDetailsView = ({ product, similarProducts = [] }) => {
   };
 
   return (
-    <div className="p-6">
-      <div className="max-w-6xl mx-auto bg-white p-8 rounded-lg">
+    <div className="p-6 bg-gray-50">
+      <h2 className="text-3xl text-center font-bold mb-6 text-green-800">
+        Best Seller
+      </h2>
+      <div className="max-w-6xl mx-auto bg-gray-50 p-8shadow-md">
 
         <div className="flex flex-col md:flex-row">
 
@@ -59,26 +62,26 @@ const ProductDetailsView = ({ product, similarProducts = [] }) => {
             <img
               src={mainImage}
               alt={product.name}
-              className="rounded-lg"
+              className="rounded-lg shadow-xl"
             />
           </div>
 
           {/* Right Side */}
-          <div className="md:w-1/2 md:ml-10">
-            <h1 className="text-3xl font-semibold mb-2">
+          <div className="md:w-1/2 md:ml-10 mt-6 md:mt-0">
+            <h1 className="text-3xl font-bold mb-2 text-gray-900">
               {product.name}
             </h1>
 
-            <p className="text-xl mb-4">₹{product.price}</p>
+            <p className="text-2xl font-semibold text-green-700 mb-4">₹{product.price}</p>
 
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 mb-6 leading-relaxed">
               {product.description}
             </p>
 
             <button
               onClick={handleAddToCart}
               disabled={isButtonDisabled}
-              className="w-full py-2 bg-black text-white rounded"
+              className="w-full py-3 rounded-lg font-semibold bg-green-600 hover:bg-green-700 text-white"
             >
               ADD TO CART
             </button>
@@ -88,7 +91,7 @@ const ProductDetailsView = ({ product, similarProducts = [] }) => {
         {/* You may also like */}
         {similarProducts.length > 0 && (
           <div className="mt-16">
-            <h2 className="text-2xl text-center font-medium mb-4 text-green-800">
+            <h2 className="text-3xl text-center font-bold mb-6 text-green-800">
               You May Also Like
             </h2>
             <ProductGrid products={similarProducts} />

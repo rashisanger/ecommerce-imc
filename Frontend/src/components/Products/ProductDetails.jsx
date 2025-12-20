@@ -12,7 +12,7 @@ import {
 import ProductGrid from "./ProductGrid";
 
 const ProductDetails = () => {
-  const { id } = useParams(); // ✅ product ID from URL
+  const { id } = useParams(); //  product ID from URL
   const dispatch = useDispatch();
 
   const {
@@ -87,8 +87,8 @@ const ProductDetails = () => {
   if (!selectedProduct) return null;
 
   return (
-    <div className="p-6">
-      <div className="max-w-6xl mx-auto bg-white p-8 rounded-lg">
+    <div className="p-6 pt-24 bg-linear-to-r from-gray-100 via-gray-200 to-gray-300 min-h-screen">
+      <div className="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-2xl">
         <div className="flex flex-col md:flex-row">
 
           {/* LEFT THUMBNAILS (DESKTOP) */}
@@ -113,7 +113,7 @@ const ProductDetails = () => {
             <img
               src={mainImage}
               alt={selectedProduct.name}
-              className="w-full h-auto object-cover rounded-lg"
+              className="w-full h-auto object-cover rounded-lg shadow-lg bg-gray-50 border border-gray-200"
             />
           </div>
 
@@ -144,14 +144,14 @@ const ProductDetails = () => {
               <div className="flex items-center gap-4 mt-2">
                 <button
                   onClick={() => handleQuantityChange("minus")}
-                  className="px-2 py-1 bg-gray-200 rounded"
+                  className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 transition font-bold"
                 >
                   -
                 </button>
                 <span>{quantity}</span>
                 <button
                   onClick={() => handleQuantityChange("plus")}
-                  className="px-2 py-1 bg-gray-200 rounded"
+                  className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 transition font-bold"
                 >
                   +
                 </button>

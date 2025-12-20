@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
-import { useNavigate, useLocation } from "react-router-dom"; // ✅ NEW
+import { useNavigate, useLocation } from "react-router-dom"; // 
 
 const SeachBar = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate();          // ✅ NEW
-  const location = useLocation();          // ✅ NEW
+  const navigate = useNavigate();          
+  const location = useLocation();          
 
   const handleSubmit = (e) => {
     e.preventDefault();

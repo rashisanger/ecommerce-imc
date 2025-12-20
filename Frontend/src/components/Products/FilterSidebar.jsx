@@ -18,18 +18,19 @@ const FilterSidebar = () => {
   };
 
   return (
-    <div className="p-4 space-y-6">
-      <h2 className="text-xl font-semibold">Filters</h2>
+    <div className="p-6 space-y-6 bg-white rounded-xl shadow-xl border border-gray-200 mt-8">
+      <h2 className="text-xl font-bold text-gray-900">Filters</h2>
 
       {/* Category */}
       <div>
-        <h3 className="font-medium mb-2">Categories</h3>
+         <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">Categories</h3>
         <div className="space-y-1">
           {["Health & Nutrition", "Skin Care", "Personal Care", "Baby Care"].map((cat) => (
             <label key={cat} className="flex items-center gap-2">
               <input
                 type="radio"
                 name="category"
+                className="accent-green-600"
                 value={cat}
                 onChange={(e) => setCategory(e.target.value)}
               />
@@ -41,7 +42,7 @@ const FilterSidebar = () => {
 
       {/* Price */}
       <div>
-        <h3 className="font-medium mb-2">Price</h3>
+        <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">Price</h3>
         <input
           type="range"
           min="50"
@@ -50,12 +51,12 @@ const FilterSidebar = () => {
           onChange={(e) => setPriceRange(e.target.value)}
           className="w-full"
         />
-        <p>Up to ₹{priceRange}</p>
+        <p className="text-gray-600 text-sm mt-1">Up to ₹{priceRange}</p>
       </div>
 
       {/* Sort */}
       <div>
-        <h3 className="font-medium mb-2">Sort By</h3>
+        <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">Sort By</h3>
         <select
           onChange={(e) => setSortBy(e.target.value)}
           className="w-full border p-2 rounded"

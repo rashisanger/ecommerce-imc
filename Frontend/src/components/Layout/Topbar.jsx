@@ -3,8 +3,8 @@ import { FaWhatsapp } from "react-icons/fa";
 
 const Topbar = () => {
   return (
-    <div className="bg-[#1c8d0e] text-white">
-        <div className='container mx-auto flex justify-between items-center py-3 px-4'>
+    <div className="bg-[#167a09] text-white">
+        <div className='container mx-auto flex justify-between items-center py-1.5 px-4 text-xs'>
 
                 <div className='hidden md:flex items-center space-x-4'>
                     <a href="#" className='hover:text-grey-300'>
@@ -12,7 +12,7 @@ const Topbar = () => {
                     </a>
                 </div>
                 
-                <div className='text-sm text-center grow font-semibold'>
+                <div className='font-medium text-center grow'>
                     <span>We have Most Authentic and Natural Products only for You!</span>
                 </div>
 

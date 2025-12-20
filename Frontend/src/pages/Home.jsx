@@ -11,12 +11,12 @@ import { fetchProducts } from "../redux/slices/productSlice";
 const Home = () => {
   const dispatch = useDispatch();
 
-  // ✅ correct state access
+  // correct state access
   const { products, loading, error } = useSelector(
     (state) => state.products
   );
 
-  // ✅ fetch best seller ON HOME LOAD
+  // fetch best seller ON HOME LOAD
   useEffect(() => {
     dispatch(
       fetchProducts({
@@ -26,23 +26,21 @@ const Home = () => {
     );
   }, [dispatch]);
 
-  // ✅ DEFINE bestSeller properly (THIS FIXES THE ERROR)
+  //  DEFINE bestSeller properly (THIS FIXES THE ERROR)
   const bestSeller = products?.[0];
 
   return (
-    <div>
+    <div >
       <Hero />
       <ProductCollectionSection />
       <FeaturedProducts />
 
-      <h2 className="text-3xl text-center font-bold mb-4">
-        Best Seller
-      </h2>
+      
 
       {loading && <p className="text-center">Loading...</p>}
       {error && <p className="text-center text-red-500">{error}</p>}
 
-      {/* ✅ SAFE RENDER */}
+      {/* SAFE RENDER */}
       {!loading && bestSeller && (
         <HomeBestSeller product={bestSeller} />
       )}

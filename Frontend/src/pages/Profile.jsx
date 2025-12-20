@@ -21,7 +21,7 @@ const Profile = () => {
   // ✅ NOT LOGGED IN CASE
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 mt-24">
         <div className="bg-white shadow-lg rounded-lg p-8 text-center max-w-md w-full">
           <h2 className="text-2xl font-bold mb-4 text-gray-800">
             You are not logged in
@@ -45,7 +45,7 @@ const Profile = () => {
 
   // ✅ LOGGED IN CASE
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col mt-24">
       <div className="container mx-auto p-6">
         <div className="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0">
 
@@ -62,7 +62,7 @@ const Profile = () => {
 
               <button
                 onClick={handleLogout}
-                className="w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition font-semibold"
+                className="w-full bg-black text-white py-2 px-4 rounded-md hover:bg-red-600 transition font-semibold"
               >
                 Logout
               </button>

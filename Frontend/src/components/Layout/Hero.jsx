@@ -8,7 +8,7 @@ const Hero = () => {
       <img
         src={heroImg}
         alt="IMC"
-        className="w-full h-[200px] md:h-[300px] lg:h-[350px] object-cover"
+        className="w-full h-[350px] md:h-[500px] lg:h-[600px] object-cover"
       />
 
       <div className="absolute inset-0 bg-black/30 flex items-center justify-center">

@@ -147,7 +147,7 @@ const Checkout = () => {
 
   /* ---------------- UI ---------------- */
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto py-10 px-6 tracking-tighter">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto py-10 px-6 tracking-tighter mt-20">
 
       {/* LEFT: FORM */}
       <div className="bg-white rounded-lg p-6">

@@ -53,7 +53,7 @@ const Collectionpage = () => {
   }, [dispatch, category, minPrice, maxPrice, sortBy, search, limit]);
 
   return (
-    <div className="flex flex-col lg:flex-row">
+    <div className="flex flex-col lg:flex-row pt-24">
       {/* Filter Sidebar */}
       <div
         ref={sidebarRef}
@@ -66,7 +66,7 @@ const Collectionpage = () => {
 
       {/* Products */}
       <div className="grow p-4">
-        <h2 className="text-2xl uppercase mb-4">ALL products</h2>
+        <h2 className="text-2xl font-semibold uppercase mb-4">ALL PRODUCTS</h2>
         {loading && <p>Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
         {!loading && !error && <ProductGrid products={products} />}

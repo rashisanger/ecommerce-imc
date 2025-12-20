@@ -27,7 +27,12 @@ const Navbar = () => {
 
   return (
     <>
-        <nav className='container mx-auto flex items-center justify-between py-2 px-6'>
+        <nav className="absolute top-14 left-1/2 transform -translate-x-1/2 
+                bg-white/95 backdrop-blur-md rounded-full 
+                border border-white/60 shadow-lg shadow-gray-200/50 
+                px-4 py-1 flex items-center justify-between 
+                w-[90%] max-w-6xl z-50">
+
             {/*left logo*/}
             <Link to="/" className="text-2xl font-medium">
                 <img src={logo} alt="logo" className='h-12 w-auto'/>
