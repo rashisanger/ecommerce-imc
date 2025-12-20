@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
+const path = require("path");
 
 const userRoutes = require("./routes/userRouts");
 const productRoutes = require("./routes/productRoutes");
@@ -14,23 +15,28 @@ const adminRoutes = require("./routes/adminRoutes");
 const productAdminRoutes = require("./routes/productAdminRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
-const path = require("path");
-
 dotenv.config();
 
 const app = express();
 
+// 🔥 CORS — FIXED
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://imc-frontend-seven.vercel.app"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 // middleware
 app.use(express.json());
-app.use(cors());
 
-// ✅ serve images folder
+// serve images folder
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 // DB
 connectDB();
-
-const PORT = process.env.PORT || 3000;
 
 // test route
 app.get("/", (req, res) => {
@@ -51,6 +57,5 @@ app.use("/api/admin/users", adminRoutes);
 app.use("/api/admin/products", productAdminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+
+module.exports = app;
