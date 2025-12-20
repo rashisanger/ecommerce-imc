@@ -22,7 +22,7 @@ const getAuthConfig = () => {
    ASYNC THUNKS
 ====================================================== */
 
-/* 🔹 Fetch all orders (ADMIN) */
+/*  Fetch all orders (ADMIN) */
 export const fetchAllOrders = createAsyncThunk(
   "adminOrders/fetchAll",
   async (_, { rejectWithValue }) => {
@@ -40,20 +40,24 @@ export const fetchAllOrders = createAsyncThunk(
   }
 );
 
-/* 🔹 Update order delivery status (ADMIN) */
-export const updateOrderDeliveryStatus = createAsyncThunk(
-  "adminOrders/updateDelivery",
-  async ({ orderId, isDelivered }, { rejectWithValue }) => {
+/*  Update order delivery status (ADMIN) */
+export const updateOrderStatus = createAsyncThunk(
+  "adminOrders/updateStatus",
+  async ({ id, status }, { rejectWithValue }) => {
     try {
       const { data } = await axios.put(
-        `${API_URL}/api/admin/orders/${orderId}/deliver`,
-        { isDelivered },
-        getAuthConfig()
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin/orders/${id}`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
+        }
       );
       return data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to update delivery status"
+        error.response?.data?.message || "Failed to update order"
       );
     }
   }
@@ -84,6 +88,8 @@ const adminOrderSlice = createSlice({
   name: "adminOrders",
   initialState: {
     orders: [],          // ✅ all orders (admin)
+    totalOrders: 0,
+    totalSales: 0, 
     loading: false,
     error: null,
     success: false,
@@ -104,6 +110,13 @@ const adminOrderSlice = createSlice({
       .addCase(fetchAllOrders.fulfilled, (state, action) => {
         state.loading = false;
         state.orders = action.payload;
+
+        state.totalOrders = action.payload.length;
+
+        state.totalSales = action.payload.reduce(
+          (sum, order) => sum + Number(order.totalPrice || 0),
+          0
+        );
       })
       .addCase(fetchAllOrders.rejected, (state, action) => {
         state.loading = false;
@@ -111,7 +124,7 @@ const adminOrderSlice = createSlice({
       })
 
       /* ---------- UPDATE DELIVERY ---------- */
-      .addCase(updateOrderDeliveryStatus.fulfilled, (state, action) => {
+      .addCase(updateOrderStatus.fulfilled, (state, action) => {
         const index = state.orders.findIndex(
           (order) => order._id === action.payload._id
         );

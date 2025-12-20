@@ -19,6 +19,7 @@ import OrderManagement from './components/Admin/OrderManagement'
 
 import {Provider} from "react-redux";
 import store from "./redux/store";
+import ProtectedRoutes from './components/Common/ProtectedRoutes'
 
 const App = () => {
   return (
@@ -35,7 +36,9 @@ const App = () => {
         <Route path='product/:id' element={<ProductDetails/>}></Route>
         <Route path="checkout" element={<Checkout/>}></Route>
         </Route>
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/admin" element={<ProtectedRoutes>
+          <AdminLayout />
+        </ProtectedRoutes>}>
           {/*Admin Layout*/}
           <Route index element={<AdminHomePage/>}></Route>
           <Route path="users" element={<UserManagement/>}></Route>

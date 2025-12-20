@@ -13,6 +13,7 @@ const Navbar = () => {
     const [navDrawerOpen, setNavDrawerOpen] = useState(false)
     const cart = useSelector((state) => state.cart)
     const cartItemCount = cart.products?.reduce((total, product) => total+product.quantity, 0) || 0;
+    const {user} = useSelector((state) => state.auth)
 
     {/*Hamburger */}
     const toggleNavDrawer = () => {   
@@ -54,7 +55,10 @@ const Navbar = () => {
             </div>
             {/*Right - icons*/}
             <div className='flex items-center space-x-4'>
-                <Link to='/admin' className='block bg-black px-2 rounded text-sm text-white'>Admin</Link>
+                {user && user.role === "admin" && (
+                    <Link to='/admin' className='block bg-black px-2 rounded text-sm text-white'>Admin</Link>
+                )}
+                
 
                 {/* Right -Serach icon */}
                 <SeachBar/>

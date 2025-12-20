@@ -45,7 +45,7 @@ export const createUser = createAsyncThunk(
         userData,
         getAuthConfig()
       );
-      return data;
+      return data.user || data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to create user"
@@ -57,19 +57,17 @@ export const createUser = createAsyncThunk(
 /* 🔹 Update user (ADMIN) */
 export const updateUser = createAsyncThunk(
   "admin/updateUser",
-  async ({ id, name, email, role }, { rejectWithValue }) => {
-    try {
-      const { data } = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/admin/users/${id}`,
-        { name, email, role },
-        getAuthConfig()
-      );
-      return data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to update user"
-      );
-    }
+  async({id, name, email, role}) => {
+    const response = await axios.put(
+      `${import.meta.env.VITE_BACKEND_URL}/api/admin/users/${id}`,
+      {name, email, role},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+      }
+    );
+    return response.data.user;
   }
 );
 
@@ -126,18 +124,18 @@ const adminSlice = createSlice({
 
       /* ---------- Create User ---------- */
       .addCase(createUser.fulfilled, (state, action) => {
-        state.users.push(action.payload);
+        const newUser =
+          action.payload?.user || action.payload;
+
+        if (newUser && newUser._id) {
+          state.users.push(newUser);
+        }
+
         state.success = true;
       })
 
       /* ---------- Update User ---------- */
       .addCase(updateUser.fulfilled, (state, action) => {
-        const index = state.users.findIndex(
-          (user) => user._id === action.payload._id
-        );
-        if (index !== -1) {
-          state.users[index] = action.payload;
-        }
         state.success = true;
       })
 

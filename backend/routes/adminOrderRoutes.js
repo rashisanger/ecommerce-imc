@@ -20,24 +20,35 @@ router.get("/", protect, admin, async(req, res) => {
 // @route PUT /api/admin/ordes/:id
 // @desc Update order status
 // @access Private/Admin
-router.put("/:id", protect, admin, async(req, res) => {
-    try{
-        const order = await Order.findById(req.params.id);
-        if(order) {
-            order.status = req.body.status || order.status;
-            order.isDelivered = req.body.status === "Delivered" ? true : order.isDelivered;
+router.put("/:id", protect, admin, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id).populate(
+      "user",
+      "name email"
+    );
 
-            order.deliveredAt = req.body.status === "Delivered" ? Date.now : order.deliveredAt;
-
-            const updateOrder = await order.save();
-            res.json(updateorder);
-        }else{
-            res.status(404).json({message: "Order not found"});
-        }
-    }catch(error) {
-        console.error(error);
-        res.status(500).json({message: "Server Error"});
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
     }
+
+    const { status } = req.body;
+
+    if (status) {
+      order.status = status;
+
+      if (status === "Delivered") {
+        order.isDelivered = true;
+        order.deliveredAt = Date.now(); //  FIXED
+      }
+    }
+
+    const updatedOrder = await order.save();
+
+    res.json(updatedOrder); //  FIXED
+  } catch (error) {
+    console.error("Update order error:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
 });
 
 // @route DELETE /api/admin/order/:id
