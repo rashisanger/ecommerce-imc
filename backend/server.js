@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
@@ -19,22 +18,27 @@ const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
 dotenv.config();
 
-// ✅ CONNECT DB ONCE (SAFE)
-connectDB()
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB error:", err));
-
 const app = express();
 
 // Middleware
 app.use(express.json());
 
-// ✅ CORS MUST BE HERE
+// CORS
 app.use(cors({
-  origin: true,               // allow ANY frontend
+  origin: true,
   credentials: true,
   methods: ["GET","POST","PUT","DELETE","OPTIONS"]
 }));
+
+// 🔥 SERVERLESS-SAFE DB CONNECT
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(500).json({ message: "Database unavailable" });
+  }
+});
 
 // Static files
 app.use("/images", express.static(path.join(__dirname, "images")));
@@ -44,11 +48,13 @@ app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
-app.get("/debug/db", async (req, res) => {
+// Debug route
+app.get("/debug/db", (req, res) => {
   res.json({
     mongooseState: require("mongoose").connection.readyState
   });
 });
+
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
