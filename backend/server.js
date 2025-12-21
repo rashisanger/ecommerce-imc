@@ -44,19 +44,16 @@ const app = express();
 // --------------------
 app.use(express.json());
 
-// --------------------
-// CORS Configuration
-// --------------------
-
 const cors = require("cors");
 
-const corsOptions = {
-  origin: true, // allow requests from any origin
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-};
-
-app.use(cors(corsOptions));
+// Only enable CORS when running locally
+if (process.env.NODE_ENV !== "production") {
+  app.use(cors({
+    origin: "http://localhost:5173",  // your frontend dev URL
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+  }));
+}
 
 
 // --------------------

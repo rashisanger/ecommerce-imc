@@ -152,11 +152,11 @@ router.get("/", async (req, res) => {
       };
     }
 
-    // Price filter
-    if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
+    // Price filter (handle empty strings safely)
+    const min = minPrice ? Number(minPrice) : 0;
+    const max = maxPrice ? Number(maxPrice) : Number.MAX_SAFE_INTEGER;
+    if (min || maxPrice) {
+      query.price = { $gte: min, $lte: max };
     }
 
     // Search filter
@@ -167,40 +167,25 @@ router.get("/", async (req, res) => {
       ];
     }
 
-    // Best Seller (uses isFeatured)
-    if (bestSeller === "true") {
-      query.isFeatured = true;
-    }
+    // Best Seller
+    if (bestSeller === "true") query.isFeatured = true;
 
     // Sorting
     let sort = {};
-    if (sortBy) {
-      switch (sortBy) {
-        case "priceAsc":
-          sort = { price: 1 };
-          break;
-        case "priceDesc":
-          sort = { price: -1 };
-          break;
-        case "nameAsc":
-          sort = { name: 1 };
-          break;
-        case "nameDesc":
-          sort = { name: -1 };
-          break;
-        case "popularity":
-          sort = { isFeatured: -1 }; // ✅ SAFE
-          break;
-        default:
-          break;
-      }
+    switch (sortBy) {
+      case "priceAsc": sort = { price: 1 }; break;
+      case "priceDesc": sort = { price: -1 }; break;
+      case "nameAsc": sort = { name: 1 }; break;
+      case "nameDesc": sort = { name: -1 }; break;
+      case "popularity": sort = { isFeatured: -1 }; break;
+      default: break;
     }
 
-    const products = await Product.find(query)
-      .sort(sort)
-      .limit(Number(limit) || 0);
+    const lim = limit ? Number(limit) : 0;
 
+    const products = await Product.find(query).sort(sort).limit(lim);
     res.json(products);
+
   } catch (error) {
     console.error("Fetch products error:", error);
     res.status(500).json({ message: "Server Error" });
