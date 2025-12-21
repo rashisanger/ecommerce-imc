@@ -17,7 +17,15 @@ const productAdminRoutes = require("./routes/productAdminRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
 dotenv.config();
-connectDB(); // Connect to MongoDB
+(async () => {
+  try {
+    await connectDB();
+    console.log("DB ready");
+  } catch (err) {
+    console.error("DB not connected, app still running");
+  }
+})();
+ // Connect to MongoDB
 
 const app = express();
 
