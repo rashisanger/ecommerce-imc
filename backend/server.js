@@ -17,6 +17,15 @@ const productAdminRoutes = require("./routes/productAdminRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
 dotenv.config();
+
+let cachedDB = null;
+
+async function connectDBOnce() {
+  if (cachedDB) return cachedDB; // reuse existing connection
+  const db = await connectDB();   // your existing connectDB function
+  cachedDB = db;
+  return db;
+}
  // Connect to MongoDB
 (async () => {
   try {
@@ -42,10 +51,7 @@ app.use(express.json());
 const cors = require("cors");
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like Postman or curl) or any frontend
-    callback(null, true);
-  },
+  origin: true, // allow requests from any origin
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 };
