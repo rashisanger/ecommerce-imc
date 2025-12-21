@@ -3,13 +3,12 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const path = require("path");
-const cors = require("cors");
 
 // Import routes
 const userRoutes = require("./routes/userRouts");
 const productRoutes = require("./routes/productRoutes");
 const cartRouts = require("./routes/cartRouts");
-const checkoutRoutes = require("./routes/checkoutRoutes");
+const CheckoutRoutes = require("./routes/checkoutRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const subscribeRoute = require("./routes/subscribeRoute");
@@ -18,49 +17,51 @@ const productAdminRoutes = require("./routes/productAdminRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
 dotenv.config();
-connectDB();
+connectDB(); // Connect to MongoDB
 
 const app = express();
 
-/* -------------------- */
-/* Middleware           */
-/* -------------------- */
+// --------------------
+// Middleware
+// --------------------
 app.use(express.json());
 
-/* -------------------- */
-/* ✅ CORS (FIXED)       */
-/* -------------------- */
-app.use(
-  cors({
-    origin: true, // ✅ allow all origins (important for Vercel previews)
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// --------------------
+// CORS Configuration
+// --------------------
 
-// Handle preflight explicitly
-app.options("*", cors());
+const cors = require("cors");
 
-/* -------------------- */
-/* Serve Images         */
-/* -------------------- */
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://imc-frontend-mu.vercel.app",
+    "https://imc-frontend-afgzejyb2-rashi-sangers-projects.vercel.app",
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true
+}));
+
+
+// --------------------
+// Serve Images
+// --------------------
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-/* -------------------- */
-/* Test Route           */
-/* -------------------- */
+// --------------------
+// Test Route
+// --------------------
 app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
-/* -------------------- */
-/* API Routes           */
-/* -------------------- */
+// --------------------
+// API Routes
+// --------------------
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRouts);
-app.use("/api/checkout", checkoutRoutes);
+app.use("/api/checkout", CheckoutRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api", subscribeRoute);
@@ -70,7 +71,7 @@ app.use("/api/admin/users", adminRoutes);
 app.use("/api/admin/products", productAdminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
-/* -------------------- */
-/* Export for Vercel    */
-/* -------------------- */
+// --------------------
+// Export App for Vercel
+// --------------------
 module.exports = app;
