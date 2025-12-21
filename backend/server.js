@@ -44,6 +44,11 @@ app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
+app.get("/debug/db", async (req, res) => {
+  res.json({
+    mongooseState: require("mongoose").connection.readyState
+  });
+});
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
