@@ -184,11 +184,11 @@ router.get("/", async (req, res) => {
     const lim = limit ? Number(limit) : 0;
 
     const products = await Product.find(query).sort(sort).limit(lim);
-    res.json(products);
+    return res.json(products);
 
   } catch (error) {
     console.error("Fetch products error:", error);
-    res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ message: "Server Error" });
   }
 });
 
@@ -211,10 +211,10 @@ router.get("/similar/:id", async (req, res) => {
       category: product.category,
     }).limit(4);
 
-    res.json(similarProducts);
+    return res.json(similarProducts);
   } catch (error) {
     console.error("Similar products error:", error);
-    res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ message: "Server Error" });
   }
 });
 
