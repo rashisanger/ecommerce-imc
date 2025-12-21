@@ -32,7 +32,8 @@ app.use(express.json());
 // List all allowed frontend URLs here
 const allowedOrigins = [
   "http://localhost:5173",                  // local dev
-  "https://imc-frontend-mu.vercel.app"     // deployed frontend
+  "https://imc-frontend-mu.vercel.app",     // deployed frontend
+  "https://imc-frontend-afgzejyb2-rashi-sangers-projects.vercel.app",
 ];
 
 app.use((req, res, next) => {
