@@ -3,12 +3,13 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const path = require("path");
+const cors = require("cors");
 
 // Import routes
 const userRoutes = require("./routes/userRouts");
 const productRoutes = require("./routes/productRoutes");
 const cartRouts = require("./routes/cartRouts");
-const CheckoutRoutes = require("./routes/checkoutRoutes");
+const checkoutRoutes = require("./routes/checkoutRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const subscribeRoute = require("./routes/subscribeRoute");
@@ -17,61 +18,49 @@ const productAdminRoutes = require("./routes/productAdminRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
 dotenv.config();
-connectDB(); // Connect to MongoDB
+connectDB();
 
 const app = express();
 
-// --------------------
-// Middleware
-// --------------------
+/* -------------------- */
+/* Middleware           */
+/* -------------------- */
 app.use(express.json());
 
-// --------------------
-// CORS Configuration
-// --------------------
-// List all allowed frontend URLs here
-const allowedOrigins = [
-  "http://localhost:5173",                  // local dev
-  "https://imc-frontend-mu.vercel.app",     // deployed frontend
-  "https://imc-frontend-afgzejyb2-rashi-sangers-projects.vercel.app",
-  /\.vercel\.app$/,   // regex to match any *.vercel.app domain
-];
+/* -------------------- */
+/* ✅ CORS (FIXED)       */
+/* -------------------- */
+app.use(
+  cors({
+    origin: true, // ✅ allow all origins (important for Vercel previews)
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (
-    allowedOrigins.some(o =>
-      typeof o === "string" ? o === origin : o.test(origin)
-    )
-  ) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  if (req.method === "OPTIONS") return res.sendStatus(200);
-  next();
-});
+// Handle preflight explicitly
+app.options("*", cors());
 
-// --------------------
-// Serve Images
-// --------------------
+/* -------------------- */
+/* Serve Images         */
+/* -------------------- */
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-// --------------------
-// Test Route
-// --------------------
+/* -------------------- */
+/* Test Route           */
+/* -------------------- */
 app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
-// --------------------
-// API Routes
-// --------------------
+/* -------------------- */
+/* API Routes           */
+/* -------------------- */
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRouts);
-app.use("/api/checkout", CheckoutRoutes);
+app.use("/api/checkout", checkoutRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api", subscribeRoute);
@@ -81,7 +70,7 @@ app.use("/api/admin/users", adminRoutes);
 app.use("/api/admin/products", productAdminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
-// --------------------
-// Export App for Vercel
-// --------------------
+/* -------------------- */
+/* Export for Vercel    */
+/* -------------------- */
 module.exports = app;
