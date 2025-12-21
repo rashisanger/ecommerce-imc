@@ -1,100 +1,8 @@
-// // server.js
-// const express = require("express");
-// const dotenv = require("dotenv");
-// const connectDB = require("./config/db");
-// const path = require("path");
-// const cors = require("cors");
-
-// // Import routes
-// const userRoutes = require("./routes/userRouts");
-// const productRoutes = require("./routes/productRoutes");
-// const cartRouts = require("./routes/cartRouts");
-// const CheckoutRoutes = require("./routes/checkoutRoutes");
-// const orderRoutes = require("./routes/orderRoutes");
-// const uploadRoutes = require("./routes/uploadRoutes");
-// const subscribeRoute = require("./routes/subscribeRoute");
-// const adminRoutes = require("./routes/adminRoutes");
-// const productAdminRoutes = require("./routes/productAdminRoutes");
-// const adminOrderRoutes = require("./routes/adminOrderRoutes");
-
-// dotenv.config();
-
-// const app = express();
-
-// // --------------------
-// // Middleware
-// // --------------------
-// app.use(express.json());
-
-// // --------------------
-// // CORS Configuration
-// // --------------------
-// app.use(
-//   cors({
-//     origin: [
-//       "http://localhost:5173", // local dev
-//       "https://imc-frontend-mu.vercel.app",
-//       "https://imc-frontend-afgzejyb2-rashi-sangers-projects.vercel.app",
-//     ],
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//     credentials: true,
-//   })
-// );
-
-// // --------------------
-// // Middleware to connect DB per request
-// // --------------------
-// app.use(async (req, res, next) => {
-//   try {
-//     await connectDB();
-//     next();
-//   } catch (err) {
-//     res.status(500).json({ message: "Database connection failed" });
-//   }
-// });
-
-// // --------------------
-// // Serve Images
-// // --------------------
-// app.use("/images", express.static(path.join(__dirname, "images")));
-
-// // --------------------
-// // Test Route
-// // --------------------
-// app.get("/", (req, res) => {
-//   res.send("Backend is running!");
-// });
-
-// // --------------------
-// // API Routes
-// // --------------------
-// app.use("/api/users", userRoutes);
-// app.use("/api/products", productRoutes);
-// app.use("/api/cart", cartRouts);
-// app.use("/api/checkout", CheckoutRoutes);
-// app.use("/api/orders", orderRoutes);
-// app.use("/api/upload", uploadRoutes);
-// app.use("/api", subscribeRoute);
-
-// // Admin routes
-// app.use("/api/admin/users", adminRoutes);
-// app.use("/api/admin/products", productAdminRoutes);
-// app.use("/api/admin/orders", adminOrderRoutes);
-
-// // --------------------
-// // Export App for Vercel
-// // --------------------
-// module.exports = app;
-
-
-
-// For Render Hosting
 // server.js
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const path = require("path");
-const cors = require("cors");
 
 // Import routes
 const userRoutes = require("./routes/userRouts");
@@ -109,6 +17,16 @@ const productAdminRoutes = require("./routes/productAdminRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
 dotenv.config();
+ // Connect to MongoDB
+(async () => {
+  try {
+    await connectDB();
+    console.log("DB ready");
+  } catch (err) {
+    console.error("DB not connected, app still running");
+  }
+})();
+
 
 const app = express();
 
@@ -117,27 +35,23 @@ const app = express();
 // --------------------
 app.use(express.json());
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://imc-frontend-mu.vercel.app",
-      "https://imc-frontend-afgzejyb2-rashi-sangers-projects.vercel.app",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true,
-  })
-);
+// --------------------
+// CORS Configuration
+// --------------------
 
-// --------------------
-// Connect to DB once at startup
-// --------------------
-connectDB()
-  .then(() => console.log("DB connected"))
-  .catch((err) => {
-    console.error("DB connection failed:", err);
-    process.exit(1); // exit if DB cannot connect
-  });
+const cors = require("cors");
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like Postman or curl) or any frontend
+    callback(null, true);
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+};
+
+app.use(cors(corsOptions));
+
 
 // --------------------
 // Serve Images
@@ -168,9 +82,6 @@ app.use("/api/admin/products", productAdminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
 // --------------------
-// Start server on Render
+// Export App for Vercel
 // --------------------
-const PORT = process.env.PORT || 9000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = app;
