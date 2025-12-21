@@ -4,11 +4,10 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-  "start": "node index.js",
-  "dev": "nodemon index.js",
-  "seed": "node seeder.js"
-}
-,
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "seed": "node seeder.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

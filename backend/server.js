@@ -3,6 +3,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const path = require("path");
+const cors = require("cors");
 
 // Import routes
 const userRoutes = require("./routes/userRouts");
@@ -17,16 +18,6 @@ const productAdminRoutes = require("./routes/productAdminRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
 dotenv.config();
- // Connect to MongoDB
-(async () => {
-  try {
-    await connectDB();
-    console.log("DB ready");
-  } catch (err) {
-    console.error("DB not connected, app still running");
-  }
-})();
-
 
 const app = express();
 
@@ -38,19 +29,29 @@ app.use(express.json());
 // --------------------
 // CORS Configuration
 // --------------------
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // local dev
+      "https://imc-frontend-mu.vercel.app",
+      "https://imc-frontend-afgzejyb2-rashi-sangers-projects.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
 
-const cors = require("cors");
-
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://imc-frontend-mu.vercel.app",
-    "https://imc-frontend-afgzejyb2-rashi-sangers-projects.vercel.app",
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true
-}));
-
+// --------------------
+// Middleware to connect DB per request
+// --------------------
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(500).json({ message: "Database connection failed" });
+  }
+});
 
 // --------------------
 // Serve Images
