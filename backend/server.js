@@ -3,8 +3,9 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const path = require("path");
+const cors = require("cors");
 
-// Import routes
+// Routes
 const userRoutes = require("./routes/userRouts");
 const productRoutes = require("./routes/productRoutes");
 const cartRouts = require("./routes/cartRouts");
@@ -18,59 +19,32 @@ const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
 dotenv.config();
 
-let cachedDB = null;
-
-async function connectDBOnce() {
-  if (cachedDB) return cachedDB; // reuse existing connection
-  const db = await connectDB();   // your existing connectDB function
-  cachedDB = db;
-  return db;
-}
- // Connect to MongoDB
-(async () => {
-  try {
-    await connectDB();
-    console.log("DB ready");
-  } catch (err) {
-    console.error("DB not connected, app still running");
-  }
-})();
-
+// ✅ CONNECT DB ONCE (SAFE)
+connectDB()
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB error:", err));
 
 const app = express();
 
-// --------------------
 // Middleware
-// --------------------
 app.use(express.json());
 
-const cors = require("cors");
+// ✅ CORS MUST BE HERE
+app.use(cors({
+  origin: true,               // allow ANY frontend
+  credentials: true,
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"]
+}));
 
-// Only enable CORS when running locally
-if (process.env.NODE_ENV !== "production") {
-  app.use(cors({
-    origin: "http://localhost:5173",  // your frontend dev URL
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-  }));
-}
-
-
-// --------------------
-// Serve Images
-// --------------------
+// Static files
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-// --------------------
-// Test Route
-// --------------------
+// Test route
 app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
-// --------------------
-// API Routes
-// --------------------
+// Routes
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRouts);
@@ -78,13 +52,8 @@ app.use("/api/checkout", CheckoutRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api", subscribeRoute);
-
-// Admin routes
 app.use("/api/admin/users", adminRoutes);
 app.use("/api/admin/products", productAdminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
-// --------------------
-// Export App for Vercel
-// --------------------
 module.exports = app;
