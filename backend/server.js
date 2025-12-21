@@ -17,15 +17,21 @@ const productAdminRoutes = require("./routes/productAdminRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
 dotenv.config();
-(async () => {
-  try {
-    await connectDB();
-    console.log("DB ready");
-  } catch (err) {
-    console.error("DB not connected, app still running");
-  }
-})();
  // Connect to MongoDB
+const mongoose = require("mongoose");
+
+const connectDB = async () => {
+  if (mongoose.connections[0].readyState) return; // Use existing connection in serverless
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB connected successfully");
+  } catch (err) {
+    console.error("Connection failed:", err);
+    throw err;
+  }
+};
+connectDB();
+
 
 const app = express();
 
