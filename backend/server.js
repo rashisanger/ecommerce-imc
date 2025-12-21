@@ -34,11 +34,16 @@ const allowedOrigins = [
   "http://localhost:5173",                  // local dev
   "https://imc-frontend-mu.vercel.app",     // deployed frontend
   "https://imc-frontend-afgzejyb2-rashi-sangers-projects.vercel.app",
+  /\.vercel\.app$/,   // regex to match any *.vercel.app domain
 ];
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
+  if (
+    allowedOrigins.some(o =>
+      typeof o === "string" ? o === origin : o.test(origin)
+    )
+  ) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
