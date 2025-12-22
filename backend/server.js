@@ -25,9 +25,9 @@ app.use(express.json());
 
 // CORS
 app.use(cors({
-  origin: true,
+  origin: process.env.FRONTEND_URL || "*", // Set your frontend deployed URL here
   credentials: true,
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"]
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 }));
 
 // Static files
@@ -36,10 +36,14 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 // Test route
 app.get("/", (req, res) => res.send("Backend is running!"));
 
-// Debug route
+// Debug route to check DB connection
 app.get("/debug/db", async (req, res) => {
-  await connectDB(); // ensure connection
-  res.json({ mongooseState: require("mongoose").connection.readyState });
+  try {
+    await connectDB();
+    res.json({ mongooseState: require("mongoose").connection.readyState });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Routes
@@ -54,12 +58,15 @@ app.use("/api/admin/users", adminRoutes);
 app.use("/api/admin/products", productAdminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
-// Local server for development only
-if (process.env.VERCEL !== "1") {
-  const PORT = process.env.PORT || 9000;
-  connectDB().then(() => {
+// Start server with DB connection
+const PORT = process.env.PORT || 5000;
+
+connectDB()
+  .then(() => {
     app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-  }).catch(err => console.error(err));
-}
+  })
+  .catch(err => {
+    console.error("❌ Failed to connect to DB:", err.message);
+  });
 
 module.exports = app;
