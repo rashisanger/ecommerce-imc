@@ -1,10 +1,34 @@
 const serverless = require("serverless-http");
-const app = require("../server"); // path to server.js
+const express = require("express");
 const connectDB = require("../config/db");
+const app = require("../server");
 
-// Wrap app to ensure DB connects on every request (serverless-safe)
+// Serverless-safe DB connection
+let dbConnected = false;
+
 const handler = async (req, res) => {
-  await connectDB();
+  if (!dbConnected) {
+    await connectDB();
+    dbConnected = true;
+  }
+
+  // Explicit CORS headers (for preflight)
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,POST,PUT,DELETE,OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+
+  // Preflight
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return;
+  }
+
   return app(req, res);
 };
 
