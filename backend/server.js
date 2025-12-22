@@ -30,8 +30,15 @@ app.use(cors({
   methods: ["GET","POST","PUT","DELETE","OPTIONS"]
 }));
 
-connectDB().catch(err => {
-  console.error("❌ MongoDB connection failed:", err.message);
+// 🔥 SERVERLESS-SAFE DB CONNECT (works on Vercel)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("❌ MongoDB connection failed:", err.message);
+    res.status(500).json({ message: "Database unavailable" });
+  }
 });
 
 // Static files
