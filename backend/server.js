@@ -67,4 +67,12 @@ app.use("/api/admin/users", adminRoutes);
 app.use("/api/admin/products", productAdminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
+// ADD THIS AT THE VERY END
+if (process.env.VERCEL !== "1") {
+  const PORT = process.env.PORT || 9000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Local server running on port ${PORT}`);
+  });
+}
+
 module.exports = app;
