@@ -30,30 +30,16 @@ app.use(cors({
   methods: ["GET","POST","PUT","DELETE","OPTIONS"]
 }));
 
-// 🔥 SERVERLESS-SAFE DB CONNECT (works on Vercel)
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (err) {
-    console.error("❌ MongoDB connection failed:", err.message);
-    res.status(500).json({ message: "Database unavailable" });
-  }
-});
-
 // Static files
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 // Test route
-app.get("/", (req, res) => {
-  res.send("Backend is running!");
-});
+app.get("/", (req, res) => res.send("Backend is running!"));
 
 // Debug route
-app.get("/debug/db", (req, res) => {
-  res.json({
-    mongooseState: require("mongoose").connection.readyState
-  });
+app.get("/debug/db", async (req, res) => {
+  await connectDB(); // ensure connection
+  res.json({ mongooseState: require("mongoose").connection.readyState });
 });
 
 // Routes
@@ -68,12 +54,12 @@ app.use("/api/admin/users", adminRoutes);
 app.use("/api/admin/products", productAdminRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
-// ADD THIS AT THE VERY END
+// Local server for development only
 if (process.env.VERCEL !== "1") {
   const PORT = process.env.PORT || 9000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Local server running on port ${PORT}`);
-  });
+  connectDB().then(() => {
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  }).catch(err => console.error(err));
 }
 
 module.exports = app;
