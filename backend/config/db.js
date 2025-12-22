@@ -1,18 +1,20 @@
 const mongoose = require("mongoose");
 
+let isConnected = false;
+
 const connectDB = async () => {
-  // Reuse existing connection (important for serverless)
-  if (mongoose.connections[0].readyState) {
-    console.log("Using existing MongoDB connection");
-    return;
-  }
+  if (isConnected) return;
+
+  if (!process.env.MONGO_URI) throw new Error("MONGO_URI is not defined");
 
   try {
-    // No need for useNewUrlParser or useUnifiedTopology
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB connected successfully");
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      bufferCommands: false
+    });
+    isConnected = conn.connections[0].readyState === 1;
+    console.log("✅ MongoDB connected");
   } catch (err) {
-    console.error("MongoDB connection failed:", err);
+    console.error("❌ MongoDB connection failed:", err.message);
     throw err;
   }
 };
